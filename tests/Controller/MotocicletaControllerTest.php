@@ -46,10 +46,8 @@ class MotocicletaControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        // Realizar la eliminación de la motocicleta
         $client->request('DELETE', '/api/motocicletas/1');
 
-        // Verificar que la respuesta tenga el código de estado 204 (No Content)
         $this->assertEquals(204, $client->getResponse()->getStatusCode());
     }
 

@@ -3,8 +3,8 @@ DOCKER_COMPOSE = docker compose
 
 # Inicia el proyecto
 init-project:
-	composer install
 	$(DOCKER_COMPOSE) up -d
+	composer install
 
 # Actualiza el esquema de la base de datos
 update-database-schema:

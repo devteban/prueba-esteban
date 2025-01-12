@@ -135,6 +135,10 @@ class Motocicleta
 
     public function setExtras(array $extras): static
     {
+        if (count($extras) > 20) {
+            throw new \InvalidArgumentException("El campo 'extras' no puede tener más de 20 elementos.");
+        }
+
         $this->extras = $extras;
 
         return $this;

@@ -181,8 +181,13 @@ class Motocicleta
 
     public function setEdicionLimitada(bool $edicionLimitada): static
     {
+        if ($this->id !== null) {
+            throw new \LogicException("No puedes modificar el campo 'edicionLimitada' una vez creado.");
+        }
+
         $this->edicionLimitada = $edicionLimitada;
 
         return $this;
     }
+
 }

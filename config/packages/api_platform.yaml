@@ -1,5 +1,5 @@
 api_platform:
-    title: Hello API Platform
+    title: Prueba técnica Esteban García
     version: 1.0.0
     defaults:
         stateless: true

@@ -6,8 +6,10 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\MotocicletaRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: MotocicletaRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 #[ApiResource]
 class Motocicleta
 {
@@ -17,21 +19,44 @@ class Motocicleta
     private ?int $id = null;
 
     #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(message: "El modelo es obligatorio.")]
+    #[Assert\Length(
+        max: 50,
+        maxMessage: "El modelo no puede exceder los 50 caracteres."
+    )]
     private ?string $modelo = null;
 
     #[ORM\Column]
+    #[Assert\NotNull(message: "La cilindrada es obligatoria.")]
+    #[Assert\Positive(message: "La cilindrada debe ser un número positivo.")]
     private ?int $cilindrada = null;
 
     #[ORM\Column(length: 40)]
+    #[Assert\NotBlank(message: "La marca es obligatoria.")]
+    #[Assert\Length(
+        max: 40,
+        maxMessage: "La marca no puede exceder los 40 caracteres."
+    )]
     private ?string $marca = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "El tipo es obligatorio.")]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "El tipo no puede exceder los 255 caracteres."
+    )]
     private ?string $tipo = null;
 
     #[ORM\Column(type: Types::SIMPLE_ARRAY)]
+    #[Assert\NotNull(message: "El campo 'extras' es obligatorio.")]
+    #[Assert\Count(
+        max: 20,
+        maxMessage: "El campo 'extras' no puede contener más de 20 elementos."
+    )]
     private array $extras = [];
 
     #[ORM\Column(nullable: true)]
+    #[Assert\PositiveOrZero(message: "El peso debe ser un número positivo o cero.")]
     private ?int $peso = null;
 
     #[ORM\Column]
@@ -41,7 +66,14 @@ class Motocicleta
     private ?\DateTimeInterface $updatedAt = null;
 
     #[ORM\Column]
+    #[ApiProperty(
+        readable: true,
+        writable: true,
+        writableOnUpdate: false
+    )]
+    #[Assert\NotNull(message: "El campo 'edicionLimitada' es obligatorio.")]
     private ?bool $edicionLimitada = null;
+
 
     public function getId(): ?int
     {
@@ -125,11 +157,10 @@ class Motocicleta
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    #[ORM\PrePersist]
+    public function setCreatedAt(): void
     {
-        $this->createdAt = $createdAt;
-
-        return $this;
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getUpdatedAt(): ?\DateTimeInterface
@@ -137,11 +168,10 @@ class Motocicleta
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTimeInterface $updatedAt): static
+    #[ORM\PreUpdate]
+    public function setUpdatedAt(): void
     {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
+        $this->updatedAt = new \DateTimeImmutable();
     }
 
     public function isEdicionLimitada(): ?bool

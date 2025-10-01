@@ -20,3 +20,6 @@ yarn-error.log
 # Base de datos SQLite (mantener estructura pero no datos)
 /database/database.sqlite
 /database/database.sqlite-*
+
+# Defense cheatsheet (solo local)
+DEFENSE-CHEATSHEET.md

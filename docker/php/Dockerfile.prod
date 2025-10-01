@@ -1,0 +1,55 @@
+FROM php:8.4-fpm-alpine
+
+# Install basic system dependencies
+RUN apk add --no-cache \
+    sqlite \
+    sqlite-dev \
+    curl \
+    zip \
+    unzip \
+    git \
+    nodejs \
+    npm
+
+# Install essential PHP extensions
+RUN docker-php-ext-install -j$(nproc) \
+    pdo_sqlite \
+    opcache
+
+# Install Composer
+COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
+
+# Create app user
+RUN addgroup -g 1000 -S www && \
+    adduser -u 1000 -S www -G www
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Copy application code
+COPY --chown=www:www . /var/www/html
+
+# Install dependencies and build assets
+RUN composer install --no-dev --optimize-autoloader --no-interaction \
+    && npm ci \
+    && npm run build \
+    && rm -rf node_modules
+
+# Laravel optimizations
+RUN php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache
+
+# Set permissions
+RUN chown -R www:www /var/www/html \
+    && chmod -R 755 /var/www/html/storage \
+    && chmod -R 755 /var/www/html/bootstrap/cache
+
+# Switch to non-root user
+USER www
+
+# Expose port 9000 for PHP-FPM
+EXPOSE 9000
+
+# Start PHP-FPM
+CMD ["php-fpm"]
